@@ -19,7 +19,7 @@ var Worker = (function (_Person) {
     _classCallCheck(this, Worker);
 
     _get(Object.getPrototypeOf(Worker.prototype), "constructor", this).call(this, name, age);
-    this.title = title, this.salary = salary, this.status = status, this.permissions = [];
+    this.title = title, this.salary = salary, this.status = status, this.permissions = [], this.dateHired = new Date();
   }
 
   _inherits(Worker, _Person);
@@ -40,6 +40,11 @@ var Worker = (function (_Person) {
     checkSalary: {
       value: function checkSalary() {
         return this.salary;
+      }
+    },
+    changeStatus: {
+      value: function changeStatus(newStatus) {
+        this.status = newStatus;
       }
     }
   });
@@ -74,13 +79,68 @@ var Department = (function () {
   return Department;
 })();
 
+var Building = (function () {
+  function Building(name, capacity, floor, buildingNumber) {
+    _classCallCheck(this, Building);
+
+    this.name = name, this.capacity = capacity, this.floor = floor, this.buildingNumber = buildingNumber, this.clearanceLevel = [], this.amenities = ["restrooms", "kitchens", "confernece room", "high-speed internet", "play center", "workspace"], this.conferenceRooms = {};
+  }
+
+  _createClass(Building, {
+    declareClearance: {
+      value: function declareClearance(levels) {
+        for (var i = 0; i < levels.length; i++) {
+          this.clearanceLevel.push(i);
+        }
+      }
+    },
+    checkClearance: {
+      value: function checkClearance() {
+        return this.clearanceLevel;
+      }
+    },
+    addAmenities: {
+      value: function addAmenities(args) {
+        for (var i = 0; i < args.length; i++) {
+          this.amenities.push(i);
+        }
+      }
+    },
+    checkAmenities: {
+      value: function checkAmenities() {
+        return this.amenities;
+      }
+    },
+    removeAmenity: {
+      value: function removeAmenity(item) {
+        if (item in this.amenities) {
+          var indexNumer = this.amenities.indexOf(item);
+          this.amenities.splice(indexNumber, 1);
+        }
+      }
+    },
+    declareConferenceRoom: {
+      value: function declareConferenceRoom(conferenceList) {}
+    }
+  });
+
+  return Building;
+})();
+
 var MAXDEPARTMENTSIZE = 4;
+var MAXBUILDINGS = 10;
 
 var Company = (function () {
   function Company(name) {
     _classCallCheck(this, Company);
 
-    this.name = name, this.departments = {};
+    this.name = name, this.departments = {}, this.clearance = {
+      standard: "A",
+      research: "B",
+      mechanical: "C",
+      executive: "D",
+      visitor: "E"
+    }, this.buildings = {};
   }
 
   _createClass(Company, {
@@ -94,6 +154,17 @@ var Company = (function () {
         } else {
           this.departments[name] = new Department(name);
         }
+      }
+    },
+    createNewBuilding: {
+      value: function createNewBuilding(name, capacity, floor, buildingNumber) {
+        this.buildings[name] = new Building(name, capacity, floor, buildingNumber);
+        return "" + name + " has been created";
+      }
+    },
+    checkBuildings: {
+      value: function checkBuildings() {
+        return this.buildings;
       }
     },
     createTeamMember: {
@@ -121,6 +192,11 @@ var Company = (function () {
       value: function terminateWorker(departmentName, name) {
         var departmentName = departmentName.toLowerCase();
       }
+    },
+    clearanceChecker: {
+      value: function clearanceChecker(clearance) {
+        var clearance = clearance.toUpperCase();
+      }
     }
   });
 
@@ -128,10 +204,14 @@ var Company = (function () {
 })();
 
 var apple = new Company("Apple");
+
 apple.createNewDepartment("product");
 apple.createNewDepartment("engineering");
 apple.createNewDepartment("management");
 apple.createNewDepartment("human resources");
+
+apple.createNewBuilding("Fera", 1000, 3, 100);
+apple.buildings.Fera.declareClearance(["E", "A"]);
 
 var jerry = new Worker("Jerry", 22, "Product Designer", 67000, "fulltime");
 var ken = new Worker("Ken", 32, "Senior Product Designer", 237000, "fulltime");
@@ -140,17 +220,30 @@ var product = [jerry, ken];
 
 apple.addTeamToDept("PRODUCT", product);
 
-var ralph = new Worker("Ralph", 33, "Software Engineer", 160000, "fulltime");
-var henry = new Worker("Henry", 33, "Software Engineer", 160000, "fulltime");
-var lauren = new Worker("Lauren", 33, "Dev Ops Engineer", 120000, "fulltime");
-var jenkins = new Worker("Jenkins", 33, "Database Engineer", 175000, "fulltime");
+var ralph = new Worker("Ralph", 23, "Software Engineer", 160000, "fulltime");
+var henry = new Worker("Henry", 55, "Senior Director Software Engineer", 290000, "fulltime");
+var lauren = new Worker("Lauren", 25, "Dev Ops Engineer", 120000, "fulltime");
+var jenkins = new Worker("Jenkins", 29, "Database Engineer", 175000, "fulltime");
 var matthews = new Worker("Matthews", 33, "Software Engineer", 210000, "fulltime");
-var amy = new Worker("Amy", 33, "Senior Software Engineer", 210000, "fulltime");
+var amy = new Worker("Amy", 43, "Senior Software Engineer", 210000, "fulltime");
+var jessica = new Worker("Jessica", 17, "iTunes", 30000, "intern");
+var tanner = new Worker("Tanner", 66, "Interational Trade Ambassador Lawyer", 300000, "fulltime");
 
-var engineering = [ralph, henry, lauren, jenkins, matthews, amy];
+var engineering = [ralph, henry, lauren, jenkins, matthews, amy, jessica, tanner];
 apple.addTeamToDept("engineering", engineering);
 
-var joy = new Worker("Joy", 55, "Chief Financial Officer", 850000, "fulltime");
+var joy = new Worker("Joy", 61, "Chief Financial Officer", 850000, "fulltime");
+var tim = new Worker("Tim", 55, "Chief Operational Officer", 8150000, "fulltime");
+var steve = new Worker("Steve", 59, "Chief Executive Officer", 11150000, "fulltime");
+var jony = new Worker("Jony", 56, "Senior Vice President of Everything Awesome", 6150000, "fulltime");
+
+var management = [joy, steve, tim, steve, jony];
+apple.addTeamToDept("management", management);
+
+var saraj = new Worker("Saraj", 35, "Director of Human Resources", 1150000, "fulltime");
+
+var hr = [saraj];
+apple.addTeamToDept("human resources", hr);
 
 console.log(apple.howManyDepartments());
 console.log(apple);
