@@ -19,17 +19,15 @@ var Worker = (function (_Person) {
     _classCallCheck(this, Worker);
 
     _get(Object.getPrototypeOf(Worker.prototype), "constructor", this).call(this, name, age);
-    this.title = title, this.salary = salary, this.status = status, this.permissions = [], this.dateHired = new Date();
+    this.title = title, this.salary = salary, this.status = status, this.permission, this.dateHired = new Date();
   }
 
   _inherits(Worker, _Person);
 
   _createClass(Worker, {
     setPermission: {
-      value: function setPermission(args) {
-        for (var i = 0; i < args.length; i++) {
-          this.permissions.push(i);
-        }
+      value: function setPermission(permission) {
+        this.permission = permission;
       }
     },
     changeSalary: {
@@ -83,14 +81,14 @@ var Building = (function () {
   function Building(name, capacity, floor, buildingNumber) {
     _classCallCheck(this, Building);
 
-    this.name = name, this.capacity = capacity, this.floor = floor, this.buildingNumber = buildingNumber, this.clearanceLevel = [], this.amenities = ["restrooms", "kitchens", "confernece room", "high-speed internet", "play center", "workspace"], this.conferenceRooms = {};
+    this.name = name, this.capacity = capacity, this.floor = floor, this.buildingNumber = buildingNumber, this.clearanceLevel = [], this.amenities = ["restrooms", "kitchens", "conference room", "high-speed internet", "play center", "workspace"], this.conferenceRooms = {}, this.usedRooms = [];
   }
 
   _createClass(Building, {
     declareClearance: {
       value: function declareClearance(levels) {
         for (var i = 0; i < levels.length; i++) {
-          this.clearanceLevel.push(i);
+          this.clearanceLevel.push(levels[i]);
         }
       }
     },
@@ -119,8 +117,47 @@ var Building = (function () {
         }
       }
     },
-    declareConferenceRoom: {
-      value: function declareConferenceRoom(conferenceList) {}
+    declareConferenceRooms: {
+      value: function declareConferenceRooms(conferenceListNames) {
+        console.log("Zoom");
+        for (var i = 0; i < conferenceListNames.length; i++) {
+          this.conferenceRooms[i] = conferenceListNames[i];
+        }
+      }
+    },
+    useConferenceRoom: {
+      value: function useConferenceRoom(name) {
+        if (name in Object.keys(this.conferenceRooms)) {
+          this.usedRoom.push(name);
+        } else {
+          return "This " + name + " is currently not free, please try another room.";
+        }
+      }
+    },
+    returnConferenceRoom: {
+      value: function returnConferenceRoom(name) {
+        var found = false;
+        if (name in this.usedRooms) {
+          found = true;
+        }
+        if (found) {
+          var roomIndex = this.usedRooms.indexOf(name);
+          this.usedRooms.splice(roomIndex, 1);
+        } else {
+          return "The room you are trying to return is not found. Please check your input.";
+        }
+      }
+    },
+    clearanceChecker: {
+      value: function clearanceChecker(building, individual) {
+        console.log(building);
+        for (var i = 0; i < building.clearanceLevel.length; i++) {
+          if (individual === building.clearanceLevel[i]) {
+            return "Access granted!";
+          }
+        }
+        return "Access Denied!";
+      }
     }
   });
 
@@ -192,11 +229,6 @@ var Company = (function () {
       value: function terminateWorker(departmentName, name) {
         var departmentName = departmentName.toLowerCase();
       }
-    },
-    clearanceChecker: {
-      value: function clearanceChecker(clearance) {
-        var clearance = clearance.toUpperCase();
-      }
     }
   });
 
@@ -210,8 +242,11 @@ apple.createNewDepartment("engineering");
 apple.createNewDepartment("management");
 apple.createNewDepartment("human resources");
 
-apple.createNewBuilding("Fera", 1000, 3, 100);
-apple.buildings.Fera.declareClearance(["E", "A"]);
+apple.createNewBuilding("Fera", 10000, 30, 100);
+apple.buildings.Fera.declareClearance(["E", "A", "D", "C", "B"]);
+
+apple.createNewBuilding("Kent", 200, 2, 110);
+apple.buildings.Kent.declareClearance(["A", "D"]);
 
 var jerry = new Worker("Jerry", 22, "Product Designer", 67000, "fulltime");
 var ken = new Worker("Ken", 32, "Senior Product Designer", 237000, "fulltime");
@@ -240,13 +275,17 @@ var jony = new Worker("Jony", 56, "Senior Vice President of Everything Awesome",
 var management = [joy, steve, tim, steve, jony];
 apple.addTeamToDept("management", management);
 
+jony.setPermission("D");
+apple.buildings.Fera.clearanceChecker(apple.buildings.Fera, jony.permission);
+
+apple.buildings.Fera.declareConferenceRooms(["Pluto", "Jupiter", "Saturn", "Mars", "Earth", "Mercury", "Venus"]);
 var saraj = new Worker("Saraj", 35, "Director of Human Resources", 1150000, "fulltime");
 
 var hr = [saraj];
 apple.addTeamToDept("human resources", hr);
 
 console.log(apple.howManyDepartments());
-console.log(apple);
+console.log(apple.buildings.Fera);
 
 var s = "subs";
 console.log(s.slice(0, 1).toUpperCase() + s.slice(1));

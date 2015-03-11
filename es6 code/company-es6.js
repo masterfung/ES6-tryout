@@ -11,14 +11,12 @@ class Worker extends Person{
     this.title = title,
     this.salary = salary,
     this.status = status,
-    this.permissions = [],
+    this.permission,
     this.dateHired = new Date()
   }
   
-  setPermission(args) {
-    for(let i = 0; i<args.length; i++) {
-      this.permissions.push(i);
-    }
+  setPermission(permission) {
+    this.permission = permission;
   }
   
   changeSalary(newSalary) {
@@ -61,12 +59,13 @@ class Building {
     this.floor = floor,
     this.buildingNumber = buildingNumber,
     this.clearanceLevel = [],
-    this.amenities = ['restrooms', 'kitchens', 'confernece room', 'high-speed internet', 'play center', 'workspace'],
-    this.conferenceRooms = {}
+    this.amenities = ['restrooms', 'kitchens', 'conference room', 'high-speed internet', 'play center', 'workspace'],
+    this.conferenceRooms = {},
+    this.usedRooms = []
   }
   declareClearance(levels) {
     for (let i = 0; i < levels.length; i++) {
-      this.clearanceLevel.push(i);
+      this.clearanceLevel.push(levels[i]);
     }
   }
   
@@ -91,8 +90,42 @@ class Building {
     }
   }
   
-  declareConferenceRoom(conferenceList) {
-    
+  declareConferenceRooms(conferenceListNames) {
+    console.log('Zoom')
+    for (let i = 0; i < conferenceListNames.length; i++) {
+      this.conferenceRooms[i] = conferenceListNames[i];
+    }
+  }
+  
+  useConferenceRoom(name) {
+    if (name in Object.keys(this.conferenceRooms)) {
+      this.usedRoom.push(name);
+    } else {
+      return `This ${name} is currently not free, please try another room.`
+    }
+  }
+  
+  returnConferenceRoom(name) {
+    let found = false;
+    if (name in this.usedRooms) {
+      found = true;
+    }
+    if (found) {
+      let roomIndex = this.usedRooms.indexOf(name);
+      this.usedRooms.splice(roomIndex, 1);
+    } else {
+      return 'The room you are trying to return is not found. Please check your input.'
+    }
+  }
+  
+  clearanceChecker(building, individual) {
+    console.log(building)
+    for (let i = 0; i < building.clearanceLevel.length; i++) {
+      if (individual === building.clearanceLevel[i]) {
+        return 'Access granted!';
+      } 
+    }
+    return 'Access Denied!';
   }
   
 }
@@ -157,11 +190,6 @@ class Company {
 
   }
   
-  clearanceChecker(clearance) {
-    let clearance = clearance.toUpperCase();
-    
-  }
-  
 }
 
 let apple = new Company('Apple');
@@ -171,8 +199,11 @@ apple.createNewDepartment('engineering');
 apple.createNewDepartment('management');
 apple.createNewDepartment('human resources');
 
-apple.createNewBuilding("Fera", 1000, 3, 100);
-apple.buildings["Fera"].declareClearance(['E', "A"])
+apple.createNewBuilding("Fera", 10000, 30, 100);
+apple.buildings["Fera"].declareClearance(['E', "A", "D", "C", "B"])
+
+apple.createNewBuilding("Kent", 200, 2, 110);
+apple.buildings["Kent"].declareClearance(["A", "D"]);
 
 let jerry = new Worker('Jerry', 22, 'Product Designer', 67000, 'fulltime');
 let ken = new Worker('Ken', 32, 'Senior Product Designer', 237000, 'fulltime');
@@ -201,13 +232,17 @@ let jony = new Worker('Jony', 56, 'Senior Vice President of Everything Awesome',
 let management = [joy, steve, tim, steve, jony];
 apple.addTeamToDept('management', management);
 
+jony.setPermission("D");
+apple.buildings['Fera'].clearanceChecker(apple.buildings['Fera'], jony.permission);
+
+apple.buildings["Fera"].declareConferenceRooms(['Pluto', 'Jupiter', 'Saturn', 'Mars', 'Earth', 'Mercury', 'Venus'])
 let saraj = new Worker('Saraj', 35, 'Director of Human Resources', 1150000, 'fulltime');
 
 let hr = [saraj];
 apple.addTeamToDept('human resources', hr);
 
 console.log(apple.howManyDepartments());
-console.log(apple);
+console.log(apple.buildings['Fera']);
 
 let s = "subs";
 console.log(s.slice(0,1).toUpperCase() + s.slice(1))
