@@ -119,26 +119,29 @@ var Building = (function () {
     },
     declareConferenceRooms: {
       value: function declareConferenceRooms(conferenceListNames) {
-        console.log("Zoom");
         for (var i = 0; i < conferenceListNames.length; i++) {
-          this.conferenceRooms[i] = conferenceListNames[i];
+          this.conferenceRooms[conferenceListNames[i]] = conferenceListNames[i];
         }
       }
     },
     useConferenceRoom: {
       value: function useConferenceRoom(name) {
-        if (name in Object.keys(this.conferenceRooms)) {
-          this.usedRoom.push(name);
-        } else {
-          return "This " + name + " is currently not free, please try another room.";
+        for (var i = 0; i < Object.keys(this.conferenceRooms).length; i++) {
+          if (name.toLowerCase() === Object.keys(this.conferenceRooms)[i].toLowerCase()) {
+            this.usedRooms.push(name);
+            return "Completed! Your request has been added. You can use the room now!";
+          }
         }
+        return "Oops! Something went wrong. Either the name is incorrect or the room is taken.";
       }
     },
     returnConferenceRoom: {
       value: function returnConferenceRoom(name) {
         var found = false;
-        if (name in this.usedRooms) {
-          found = true;
+        for (var i = 0; i < this.usedRooms.length; i++) {
+          if (name === this.usedRooms[i]) {
+            found = true;
+          }
         }
         if (found) {
           var roomIndex = this.usedRooms.indexOf(name);
@@ -279,6 +282,9 @@ jony.setPermission("D");
 apple.buildings.Fera.clearanceChecker(apple.buildings.Fera, jony.permission);
 
 apple.buildings.Fera.declareConferenceRooms(["Pluto", "Jupiter", "Saturn", "Mars", "Earth", "Mercury", "Venus"]);
+apple.buildings.Fera.useConferenceRoom("Pluto");
+apple.buildings.Fera.returnConferenceRoom("Pluto");
+
 var saraj = new Worker("Saraj", 35, "Director of Human Resources", 1150000, "fulltime");
 
 var hr = [saraj];
