@@ -1,6 +1,7 @@
 #Trying out ES6
-===============
-#####By: Tsung Hung @masterfung
+==========
+#####By: Tsung Hung | @masterfung
+#####Originally Started on: March 10, 2015
 
 ##Introduction
 Javascript is fun and trival. However, with ES6, things have greatly improved. I wanted to try out the features. This is my first project with ES6. 
